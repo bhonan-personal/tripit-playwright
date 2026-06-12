@@ -6,7 +6,13 @@ const SCREENSHOTS_DIR = path.join(__dirname, '../screenshots');
 
 async function navigate(page, label, url) {
   console.log(`\n→ ${label}`);
-  await page.goto(url, { waitUntil: 'networkidle' });
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  // Wait for the SPA to finish rendering (spinner disappears or 6s max)
+  await page.waitForFunction(
+    () => !document.querySelector('.loading-spinner, [class*="spinner"], [class*="loading"]'),
+    { timeout: 6000 }
+  ).catch(() => {});
+  await page.waitForTimeout(2000);
   const file = path.join(SCREENSHOTS_DIR, `${label.replace(/\s+/g, '-').toLowerCase()}.png`);
   await page.screenshot({ path: file, fullPage: true });
   console.log(`  Screenshot saved: ${path.basename(file)}`);
@@ -25,7 +31,7 @@ async function navigate(page, label, url) {
     await navigate(page, 'points-pro',        `${TRIPIT_BASE}/pro`);
 
     // Print a summary of all trips found on the trips page
-    await page.goto(`${TRIPIT_BASE}/trips`, { waitUntil: 'networkidle' });
+    await page.goto(`${TRIPIT_BASE}/trips`, { waitUntil: 'domcontentloaded' });
     const tripTitles = await page.$$eval(
       '[data-test="trip-name"], .trip-name, h2.trip-title, a.trip-link',
       els => els.map(el => el.textContent.trim()).filter(Boolean)
