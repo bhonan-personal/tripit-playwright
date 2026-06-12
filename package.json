@@ -1,0 +1,17 @@
+{
+  "name": "tripit-playwright",
+  "version": "1.0.0",
+  "description": "Playwright automation for TripIt",
+  "scripts": {
+    "login": "node scripts/login.js",
+    "explore": "node scripts/explore.js",
+    "test": "playwright test"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "playwright": "^1.44.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.44.0"
+  }
+}
